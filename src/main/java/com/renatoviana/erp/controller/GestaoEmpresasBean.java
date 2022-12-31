@@ -1,12 +1,15 @@
 package com.renatoviana.erp.controller;
 
 import java.io.Serializable;
+import java.util.List;
 
 import javax.faces.view.ViewScoped;
+import javax.inject.Inject;
 import javax.inject.Named;
 
 import com.renatoviana.erp.model.Empresa;
-import com.renatoviana.erp.model.TipoEmpresa;
+import com.renatoviana.erp.repository.Empresas;
+import com.renatoviana.erp.util.FacesMessages;
 
 @Named
 @ViewScoped
@@ -14,24 +17,38 @@ public class GestaoEmpresasBean implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	private Empresa empresa = new Empresa();
+	@Inject
+	private Empresas empresas;
 
-	public void salvar() {
-		System.out.println("Razão social: " + empresa.getRazaoSocial()
-				+ " - Nome fantasia: " + empresa.getNomeFantasia()
-				+ " - Tipo: " + empresa.getTipo());
-	}
-	
-	public String ajuda() {
-		return "AjudaGestaoEmpresas?faces-redirect=true";
+	@Inject
+	private FacesMessages messages;
+
+	private List<Empresa> listaEmpresas;
+
+	private String termoPesquisa;
+
+	public void pesquisar() {
+		listaEmpresas = empresas.pesquisar(termoPesquisa);
+
+		if (listaEmpresas.isEmpty()) {
+			messages.info("Sua consulta não retornou registros");
+		}
 	}
 
-	public Empresa getEmpresa() {
-		return empresa;
+	public void todasEmpresas() {
+		listaEmpresas = empresas.todas();
 	}
 
-	public TipoEmpresa[] getTiposEmpresa() {
-		return TipoEmpresa.values();
+	public List<Empresa> getListaEmpresas() {
+		return listaEmpresas;
+	}
+
+	public String getTermoPesquisa() {
+		return termoPesquisa;
+	}
+
+	public void setTermoPesquisa(String termoPesquisa) {
+		this.termoPesquisa = termoPesquisa;
 	}
 
 }

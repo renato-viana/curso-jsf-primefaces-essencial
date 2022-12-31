@@ -1,116 +1,84 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml"
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
 	xmlns:h="http://xmlns.jcp.org/jsf/html"
 	xmlns:f="http://xmlns.jcp.org/jsf/core"
-	xmlns:p="http://primefaces.org/ui">
-<h:head>
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	template="WEB-INF/template/Layout.xhtml">
 
-	<meta charset="UTF-8" />
-	<title>Gestão Empresas</title>
+	<ui:define name="titulo">Cadastro de Empresas</ui:define>
 
-	<h:outputStylesheet library="algaworks" name="estilo.css" />
+	<ui:define name="conteudo">
 
-</h:head>
+		<f:metadata>
+			<f:viewAction action="#{gestaoEmpresasBean.todasEmpresas}" />
+		</f:metadata>
 
-<h:body>
-	<header>
-		<h:graphicImage library="algaworks" name="logo.png" />
-	</header>
-
-	<div id="conteudo">
 		<h:form>
-			<h:panelGrid columns="2">
-				<p:outputLabel value="Razão social: " for="razaoSocial" />
-				<h:panelGroup>
-					<p:inputText id="razaoSocial"
-						value="#{gestaoEmpresasBean.empresa.razaoSocial}"
-						label="Razão social" required="true" />
+			<p:messages autoUpdate="true" />
 
-					<p:message for="razaoSocial" />
-				</h:panelGroup>
+			<p:toolbar>
+				<f:facet name="left">
+					<p:inputText placeholder="Digite aqui um termo para pesquisa..."
+						size="30" value="#{gestaoEmpresasBean.termoPesquisa}" />
 
-				<p:outputLabel value="Nome Fantasia: " for="nomeFantasia" />
-				<p:inputText id="nomeFantasia"
-					value="#{gestaoEmpresasBean.empresa.nomeFantasia}" />
+					<p:commandButton value="Pesquisar" icon="fa fa-search"
+						actionListener="#{gestaoEmpresasBean.pesquisar}"
+						update="empresasDataTable" />
 
-				<p:outputLabel value="Tipo empresa: " for="tipo" />
-				<h:panelGroup>
-					<p:selectOneMenu id="tipo"
-						value="#{gestaoEmpresasBean.empresa.tipo}" label="Tipo empresa"
-						required="true">
-						<f:selectItem itemLabel="Selecione..." />
-						<f:selectItems value="#{gestaoEmpresasBean.tiposEmpresa}"
-							var="tipoEmpresa" itemLabel="#{tipoEmpresa.descricao}"
-							itemValue="#{tipoEmpresa}" />
-					</p:selectOneMenu>
+					<span class="ui-separator"> <span
+						class="ui-icon ui-icon-grip-dotted-vertical" />
+					</span>
 
-					<p:message for="tipo" />
-				</h:panelGroup>
+					<p:commandButton value="Nova" icon="fa fa-plus"
+						onclick="PF('empresaDialogWidgetVar').show()" />
 
-				<p:outputLabel value="CNPJ: " for="cnpj" />
-				<h:panelGroup>
-					<p:inputText id="cnpj" value="#{gestaoEmpresasBean.empresa.cnpj}"
-						label="CNPJ">
-						<f:validateLength minimum="18" maximum="18" />
-					</p:inputText>
+					<span class="ui-separator"> <span
+						class="ui-icon ui-icon-grip-dotted-vertical" />
+					</span>
 
-					<p:message for="cnpj" />
-				</h:panelGroup>
+					<p:commandButton title="Editar" icon="fa fa-edit" />
 
-				<p:outputLabel value="Data fundação: " for="dataFundacao" />
-				<h:panelGroup>
-					<p:inputText id="dataFundacao"
-						value="#{gestaoEmpresasBean.empresa.dataFundacao}"
-						label="Data fundação">
-						<f:convertDateTime pattern="dd/MM/yyyy" />
-					</p:inputText>
+					<p:commandButton title="Excluir" icon="fa fa-trash" />
 
-					<p:message for="dataFundacao" />
-				</h:panelGroup>
+					<span class="ui-separator"> <span
+						class="ui-icon ui-icon-grip-dotted-vertical" />
+					</span>
 
-				<p:outputLabel value="Faturamento: " for="faturamento" />
-				<h:panelGroup>
-					<p:inputText id="faturamento"
-						value="#{gestaoEmpresasBean.empresa.faturamento}"
-						label="Faturamento">
-						<f:convertNumber pattern="#,##0.00" />
-						<f:validateDoubleRange minimum="0" />
-					</p:inputText>
+					<p:commandButton title="Exportar para o Excel"
+						icon="fa fa-file-excel-o" />
+				</f:facet>
+			</p:toolbar>
 
-					<p:message for="faturamento" />
-				</h:panelGroup>
+			<p:spacer height="20px" />
 
-				<h:outputLabel />
-				<p:commandButton value="Salvar"
-					actionListener="#{gestaoEmpresasBean.salvar}" update="@form" />
-
-				<h:outputLabel />
-				<p:commandLink value="Ajuda?" action="#{gestaoEmpresasBean.ajuda}" />
-			</h:panelGrid>
-
-			<p:dataTable value="#{[0, 0, 0, 0]}">
-				<p:column headerText="Razão social">
-
-					<h:outputText value="AlgaWorks Softwares, Treinamentos LTDA" />
+			<p:dataTable id="empresasDataTable"
+				value="#{gestaoEmpresasBean.listaEmpresas}" var="empresa"
+				emptyMessage="Nenhuma informação a ser exibida" paginator="true"
+				rows="10" paginatorPosition="bottom">
+				<p:column headerText="Razão social" sortBy="#{empresa.razaoSocial}">
+					<h:outputText value="#{empresa.razaoSocial}" />
 				</p:column>
 
 				<p:column headerText="Nome Fantasia">
-
-					<h:outputText value="AlgaWorks" />
+					<h:outputText value="#{empresa.nomeFantasia}" />
 				</p:column>
 
-				<p:column>
-					<f:facet name="header">
-						<h:outputText value="Tipo empresa" />
-					</f:facet>
+				<p:column headerText="Tipo empresa">
+					<h:outputText value="#{empresa.tipo}" />
+				</p:column>
 
-					<h:outputText value="LTDA" />
+				<p:column headerText="Ramo Atividade">
+					<h:outputText value="#{empresa.ramoAtividade.descricao}" />
 				</p:column>
 			</p:dataTable>
+
+			<p:dialog header="Nova Empresa" widgetVar="empresaDialogWidgetVar"
+				modal="true" resizable="false" closeOnEscape="true">
+				<p:commandButton value="Teste!"></p:commandButton>
+			</p:dialog>
 		</h:form>
-	</div>
 
-	<footer> Curso online "JSF e PrimeFaces Essencial" </footer>
-</h:body>
+	</ui:define>
 
-</html>
+</ui:composition>
